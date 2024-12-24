@@ -1,0 +1,39 @@
+{
+  "employee": [
+    {
+      "id": "1",
+      "name": "Rauink",
+      "doj": "2024-12-23T02:31:39.828Z",
+      "role": "manager",
+      "salary": "1895"
+    },
+    {
+      "id": "2",
+      "name": "Avisck",
+      "doj": "2021-11-18T07:22:40.848Z",
+      "role": "operator",
+      "salary": "3200"
+    },
+    {
+      "id": "3",
+      "name": "Romesh",
+      "doj": "2024-12-24T07:19:26.938Z",
+      "role": "manager",
+      "salary": "1760"
+    },
+    {
+      "id": "4",
+      "name": "Bansar",
+      "doj": "2014-11-01T18:15:00.000Z",
+      "role": "lead",
+      "salary": "6500"
+    },
+    {
+      "id": "5",
+      "name": "Chiraian",
+      "doj": "2020-05-24T18:15:00.000Z",
+      "role": "manager",
+      "salary": "3800"
+    }
+  ]
+}

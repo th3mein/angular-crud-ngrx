@@ -8,9 +8,11 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 
 import { AddEmployeeComponent } from '../add-employee/add-employee.component';
 import { Employee } from '../../model/Employee';
-import { EmployeeService } from '../../services/employee.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { getEmployeeList } from '../../store/employee.selector';
+import { deleteEmployee, loadEmployees } from '../../store/employee.action';
 
 @Component({
   selector: 'app-employee',
@@ -37,7 +39,9 @@ export class EmployeeComponent {
   ];
 
   subscription = new Subscription();
-  constructor(private dialog: MatDialog, private service: EmployeeService) {}
+
+  // constructor(private dialog: MatDialog, private service: EmployeeService) {}
+  constructor(private dialog: MatDialog, private store: Store) {}
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -48,11 +52,16 @@ export class EmployeeComponent {
   }
 
   getAllEmployees() {
-    let sub = this.service.GetAll().subscribe((item) => {
+    // let sub = this.service.GetAll().subscribe((item) => {
+    //   this.empList = item;
+    //   this.dataSource = new MatTableDataSource(this.empList);
+    // });
+    // this.subscription.add(sub);
+    this.store.dispatch(loadEmployees());
+    this.store.select(getEmployeeList).subscribe((item) => {
       this.empList = item;
       this.dataSource = new MatTableDataSource(this.empList);
     });
-    this.subscription.add(sub);
   }
 
   addEmployee() {
@@ -61,10 +70,11 @@ export class EmployeeComponent {
 
   DeleteEmployee(empId: number) {
     if (confirm('Are you sure?')) {
-      let sub = this.service.Delete(empId).subscribe((item) => {
-        this.getAllEmployees();
-      });
-      this.subscription.add(sub);
+      // let sub = this.service.Delete(empId).subscribe((item) => {
+      //   this.getAllEmployees();
+      // });
+      // this.subscription.add(sub);
+      this.store.dispatch(deleteEmployee({ empId }));
     }
   }
 

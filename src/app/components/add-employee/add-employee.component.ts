@@ -14,9 +14,17 @@ import {
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Employee } from '../../model/Employee';
-import { EmployeeService } from '../../services/employee.service';
+// import { EmployeeService } from '../../services/employee.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { Store } from '@ngrx/store';
+import {
+  addEmployee,
+  getEmployee,
+  updateEmployee,
+} from '../../store/employee.action';
+import { selectEmployeeById } from '../../store/employee.selector';
+// import { getEmployeeById } from '../../store/employee.selector';
 @Component({
   selector: 'app-add-employee',
   imports: [
@@ -45,8 +53,14 @@ export class AddEmployeeComponent {
     salary: new FormControl(0, Validators.required),
   });
 
+  // constructor(
+  //   private service: EmployeeService,
+  //   private ref: MatDialogRef<AddEmployeeComponent>,
+  //   private toastr: ToastrService,
+  //   @Inject(MAT_DIALOG_DATA) public data: any
+  // ) {}
   constructor(
-    private service: EmployeeService,
+    private store: Store,
     private ref: MatDialogRef<AddEmployeeComponent>,
     private toastr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -58,18 +72,49 @@ export class AddEmployeeComponent {
     if (this.dialogData.code > 0) {
       this.title = 'Edit Employee';
       this.isEdit = true;
-      this.service.Get(this.dialogData.code).subscribe((item) => {
-        let _data = item;
-        if (_data != null) {
-          this.empForm.setValue({
-            id: _data.id,
-            name: _data.name,
-            role: _data.role,
-            doj: _data.doj,
-            salary: _data.salary,
-          });
-        }
-      });
+
+      // this.store.dispatch(getEmployee({ empId: this.dialogData.code }));
+      // this.store.select(getEmployeeById).subscribe((item) => {
+      //   let _data = item;
+      //   if (_data != null) {
+      //     this.empForm.setValue({
+      //       id: _data.id,
+      //       name: _data.name,
+      //       role: _data.role,
+      //       doj: _data.doj,
+      //       salary: _data.salary,
+      //     });
+      //   }
+      // });
+
+      this.store
+        .select(selectEmployeeById(this.dialogData.code))
+        .subscribe((item) => {
+          let _data = item;
+
+          if (_data != null) {
+            this.empForm.setValue({
+              id: _data.id,
+              name: _data.name,
+              role: _data.role,
+              doj: _data.doj,
+              salary: _data.salary,
+            });
+          }
+        });
+
+      // this.service.Get(this.dialogData.code).subscribe((item) => {
+      //   let _data = item;
+      //   if (_data != null) {
+      //     this.empForm.setValue({
+      //       id: _data.id,
+      //       name: _data.name,
+      //       role: _data.role,
+      //       doj: _data.doj,
+      //       salary: _data.salary,
+      //     });
+      //   }
+      // });
     }
   }
 
@@ -84,16 +129,19 @@ export class AddEmployeeComponent {
         salary: this.empForm.value.salary as number,
       };
       if (this.isEdit) {
-        this.service.Update(_data).subscribe((item) => {
-          this.toastr.success('Update Success', 'Employee Edit');
-          this.closepop();
-        });
+        this.store.dispatch(updateEmployee({ data: _data }));
+        // this.service.Update(_data).subscribe((item) => {
+        //   this.toastr.success('Update Success', 'Employee Edit');
+        //   this.closepop();
+        // });
       } else {
-        this.service.Create(_data).subscribe((item) => {
-          this.toastr.success('Save success', 'Employee Added');
-          this.closepop();
-        });
+        this.store.dispatch(addEmployee({ data: _data }));
+        // this.service.Create(_data).subscribe((item) => {
+        //   this.toastr.success('Save success', 'Employee Added');
+        //   this.closepop();
+        // });
       }
+      this.closepop();
     }
   }
 
